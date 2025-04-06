@@ -5,6 +5,7 @@ import com.example.CodeJudge.modelDTOs.FavouriteDTO;
 import com.example.CodeJudge.modelDTOs.ProblemDTO;
 import com.example.CodeJudge.modelDTOs.ProblemResponce;
 import com.example.CodeJudge.service.ProblemService;
+import com.example.CodeJudge.util.AuthUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 public class ProblemController {
     @Autowired
     ProblemService problemService;
+
+    @Autowired
+    private AuthUtil authUtil;
 
     @PostMapping("/admin/categories/{categoryId}/problem")
     public ResponseEntity<ProblemDTO> addProblem(@Valid @RequestBody ProblemDTO problemDTO,
@@ -82,19 +86,20 @@ public class ProblemController {
         return new ResponseEntity<>(deletedProblem, HttpStatus.OK);
     }
 
-    @GetMapping("/public/favourites/{userId}")
-    public ResponseEntity<ProblemResponce> getAllUserFavorites(@PathVariable Long userId,
+    @GetMapping("/user/favourites/")
+    public ResponseEntity<ProblemResponce> getAllUserFavorites(
                                                                @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
                                                                @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
                                                                @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_PROBLEMS_BY, required = false) String sortBy,
                                                                @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder){
+        Long userId = authUtil.loggedInUserId();
         ProblemResponce problemResponce = problemService.getAllUserFavourites(userId,pageNumber, pageSize, sortBy, sortOrder);
 
         return new ResponseEntity<>(problemResponce,HttpStatus.OK);
     }
 
 
-    @PostMapping("/toggle")
+    @PostMapping("user/toggle")
     public ResponseEntity<Void> toggleFavorite(
             @Valid @RequestBody FavouriteDTO request) {
         problemService.toggleFavorite(

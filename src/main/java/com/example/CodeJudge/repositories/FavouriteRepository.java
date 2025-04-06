@@ -13,6 +13,5 @@ import java.util.Optional;
 public interface FavouriteRepository extends JpaRepository<Favourite,Long> {
 
     Page<Problem> findProblemsByUser(User user, Pageable pageDetails);
-
     Optional<Favourite> findByUserAndProblem(User user, Problem problem);
 }

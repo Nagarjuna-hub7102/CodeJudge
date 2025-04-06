@@ -17,7 +17,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "problems")
-@ToString
 public class Problem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,16 +30,20 @@ public class Problem {
 
     @ManyToOne
     @JoinColumn(name = "categoryId")
+
     private Category category;
 
     @OneToOne(mappedBy = "problem",cascade = CascadeType.ALL,orphanRemoval = true )
+    @ToString.Exclude
     private ProblemDescription problemDescription;
 
     @OneToMany(mappedBy = "problem",cascade = CascadeType.ALL,orphanRemoval = true)
+    @ToString.Exclude
     private List<TestCase> testCase;
 
     @OneToMany(mappedBy = "problem", orphanRemoval = false)
     @OnDelete(action = OnDeleteAction.SET_NULL)
+    @ToString.Exclude
     private List<Submission> submissions;
 
 

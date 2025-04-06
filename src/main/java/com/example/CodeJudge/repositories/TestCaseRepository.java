@@ -12,4 +12,8 @@ public interface TestCaseRepository extends JpaRepository<TestCase,Long> {
     boolean existsByInputAndExpectedOutputAndProblem(String input, String expectedOutput, Problem problem);
 
     List<TestCase> findByProblem(Problem problem);
+
+    List<TestCase> findTop2ByProblem_ProblemIdOrderByIdAsc(Long problemId);
+
+
 }

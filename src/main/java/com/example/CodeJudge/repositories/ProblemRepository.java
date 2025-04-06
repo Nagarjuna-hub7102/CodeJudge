@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+
 import java.util.Optional;
 
 @Repository
@@ -24,4 +25,6 @@ public interface ProblemRepository  extends JpaRepository<Problem,Long> {
     Page<Problem> findByCategory(Category category, Pageable pageable);
 
     Page<Problem> findByCategoryAndDifficultyIgnoreCase(Category category, String difficulty, Pageable pageable);
+
+
 }
