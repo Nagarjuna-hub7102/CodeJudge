@@ -4,6 +4,8 @@ import com.example.CodeJudge.execptions.ResourceNotFoundException;
 import com.example.CodeJudge.model.Problem;
 import com.example.CodeJudge.model.Submission;
 import com.example.CodeJudge.model.User;
+import com.example.CodeJudge.modelDTOs.SolvedProblemCodeDTO;
+import com.example.CodeJudge.modelDTOs.SolvedSummaryDTO;
 import com.example.CodeJudge.modelDTOs.SubmissionDTO;
 import com.example.CodeJudge.modelDTOs.SubmissionResponce;
 import com.example.CodeJudge.repositories.ProblemRepository;
@@ -50,6 +52,34 @@ public class SubmissionServiceImpl implements SubmissionService {
 
         return makeResponse(submissionPage);
     }
+    @Override
+    public List<SolvedSummaryDTO> getSolvedProblemsByUser(Long userId, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Sort.Direction direction = sortOrder.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(direction, sortBy));
+
+        Page<Object[]> resultPage = submissionRepository.findSolvedProblemsByUser(userId, pageable);
+
+        return resultPage.getContent().stream()
+                .map(obj -> new SolvedSummaryDTO(
+                        ((Number) obj[0]).longValue(),
+                        (String) obj[1],
+                        (String) obj[2]
+                ))
+                .toList();
+    }
+
+    @Override
+    public SolvedProblemCodeDTO getLatestSolvedCode(Long userId, Long problemId) {
+        Submission submission = submissionRepository.findLatestAcceptedSubmissionByUserAndProblem(userId, problemId);
+
+        if (submission == null) {
+            throw new ResourceNotFoundException("Accepted Submission", "problemId", problemId);
+        }
+
+        return new SolvedProblemCodeDTO(submission.getCode(), submission.getSubmissionTime());
+    }
+
+
 
     // Helper Methods
     private User validateUser(Long userId) {

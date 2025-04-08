@@ -9,10 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubmissionDTO {
-    private Long submissionId;
-    private String problemName;
-    private Boolean isAccepted;
+public class SolvedProblemCodeDTO {
+    private String code;
     private LocalDateTime submissionTime;
 }
-

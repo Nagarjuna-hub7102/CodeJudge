@@ -4,15 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubmissionDTO {
-    private Long submissionId;
+public class SolvedSummaryDTO {
+    private Long problemId;
     private String problemName;
-    private Boolean isAccepted;
-    private LocalDateTime submissionTime;
+    private String categoryName;
 }
-

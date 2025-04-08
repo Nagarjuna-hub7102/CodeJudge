@@ -31,10 +31,11 @@ public class OpenAIServiceImpl implements OpenAIService{
     private static final String OPENAI_URL = "https://api.openai.com/v1/chat/completions";
     @Override
     public List<TestCase> generateTestCasesForProblem(Problem problem) {
-        ProblemDescription problemDescription = problemDescriptionRepository.findByProblem(problem).orElseThrow(()-> new ResourceNotFoundException("problemDescription","problem",problem.getProblemId()));
-        String prompt = buildPrompt(problem,problemDescription.getConstraints());
+        ProblemDescription problemDescription = problemDescriptionRepository.findByProblem(problem)
+                .orElseThrow(() -> new ResourceNotFoundException("ProblemDescription", "problem", problem.getProblemId()));
 
-        // Prepare the OpenAI API request
+        String prompt = buildPrompt(problem, problemDescription.getConstraints());
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(apiKey);
@@ -54,9 +55,12 @@ public class OpenAIServiceImpl implements OpenAIService{
                 OPENAI_URL, HttpMethod.POST, request, OpenAIResponce.class
         );
 
+        if (response.getBody() == null || response.getBody().getChoices().isEmpty()) {
+            throw new RuntimeException("No response from OpenAI");
+        }
+
         String content = response.getBody().getChoices().get(0).getMessage().getContent();
 
-        // Parse JSON response into List<TestCase>
         try {
             ObjectMapper mapper = new ObjectMapper();
             return Arrays.asList(mapper.readValue(content, TestCase[].class));
@@ -64,6 +68,7 @@ public class OpenAIServiceImpl implements OpenAIService{
             throw new RuntimeException("Failed to parse test cases from OpenAI", e);
         }
     }
+
 
     private String buildPrompt(Problem problem,String Constraints) {
         return """
